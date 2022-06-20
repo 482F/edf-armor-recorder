@@ -36,9 +36,9 @@
       <VTextField v-model="endArmor" density="compact" variant="outlined" />
     </div>
     <div class="row">
-      <VBtn :disabled="startDate" @click="startRecord">start</VBtn>
+      <VBtn :disabled="Boolean(startDate)" @click="startRecord">start</VBtn>
       <VBtn
-        :disabled="(Number(endArmor) || -Infinity) < startArmor"
+        :disabled="(Number(endArmor) || -Infinity) < startArmor || !startDate"
         @click="stopRecord"
         >finish</VBtn
       >
