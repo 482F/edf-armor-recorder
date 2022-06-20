@@ -3,8 +3,14 @@
     <div class="row">
       <span class="label">経過時間</span>
       <span>
-        {{ eTime.toString().padStart(3, '0') }}
+        {{
+          Math.floor(eTime / 60)
+            .toString()
+            .padStart(3, '0')
+        }}
         分
+        {{ (eTime % 60).toString().padStart(2, '0') }}
+        秒
       </span>
     </div>
     <div class="row">
@@ -55,18 +61,14 @@ const startArmor = ref(
 )
 const endArmor = ref('')
 
-const startDate = ref(0)
-const finishDate = ref(0)
 setInterval(() => (finishDate.value = new Date().getTime()), 100)
 const eTime = computed(() =>
-  Math.round(
-    (finishDate.value - (startDate.value || finishDate.value)) / (1000 * 60)
-  )
+  Math.round((finishDate.value - (startDate.value || finishDate.value)) / 1000)
 )
 
 const doRecord = () => {
   const newRecord = {
-    eTime: eTime.value,
+    eTime: Math.round(eTime.value / 60),
     gotArmor: endArmor.value - startArmor.value,
   }
   emits('update:record', {
