@@ -70,15 +70,22 @@ const startDate = ref(
   Number(localStorage.getItem('edf-armor-recorder--startDate')) || 0
 )
 const finishDate = ref(new Date().getTime())
-setInterval(() => (finishDate.value = new Date().getTime()), 100)
+const updatingFinishDate = () => setInterval(
+  () => (finishDate.value = new Date().getTime()),
+  100
+)
+
 const eTime = computed(() =>
   Math.round((finishDate.value - (startDate.value || finishDate.value)) / 1000)
 )
+
+let intervalId = startDate.value ? updatingFinishDate() : undefined
 
 const reset = () => {
   startDate.value = 0
   finishDate.value = 0
   localStorage.setItem('edf-armor-recorder--startDate', startDate.value)
+  clearInterval(intervalId)
 }
 const doRecord = () => {
   const newRecord = {
@@ -92,18 +99,19 @@ const doRecord = () => {
       newRecord,
     ],
   })
-  reset()
 }
 const startRecord = () => {
   startDate.value = new Date().getTime()
   finishDate.value = startDate.value
   localStorage.setItem('edf-armor-recorder--startDate', startDate.value)
+  intervalId = updatingFinishDate()
 }
 const stopRecord = () => {
   doRecord()
   startArmor.value = endArmor.value
   update('startArmor', startArmor.value)
   endArmor.value = ''
+  reset()
 }
 </script>
 
