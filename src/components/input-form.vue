@@ -49,6 +49,7 @@
     <div>
       <VTextarea
         class="textarea"
+        variant="outlined"
         :model-value="JSON.stringify(record)"
         @update:model-value="$emit('update:record', JSON.parse($event))"
       />
@@ -154,8 +155,11 @@ const stopRecord = () => {
         height: 100%;
         > div {
           height: 100%;
-          textarea {
+          .v-field__field {
+          padding: 4px;
+          > textarea {
             resize: none;
+          }
           }
         }
       }
