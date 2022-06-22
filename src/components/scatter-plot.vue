@@ -55,6 +55,7 @@ const nums = computed(() => {
   const values = Object.values(props.record).flatMap((records) => records)
   const amounts = values.map((value) => value.gotArmor)
   const amountPerHs = values.map((value) => value.gotArmor / (value.eTime / 60))
+  const times = values.map((value) => value.eTime)
   return {
     amount: {
       max: Math.max(...amounts) * 1.05,
@@ -63,6 +64,10 @@ const nums = computed(() => {
     amountPerH: {
       max: Math.max(...amountPerHs) * 1.05,
       min: Math.min(...amountPerHs) * 0.95,
+    },
+    eTime: {
+      max: Math.max(...times) * 1.05,
+      min: Math.min(...times) * 0.95,
     },
   }
 })
@@ -93,7 +98,7 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = {
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   scales: {
@@ -113,8 +118,12 @@ const chartOptions = {
         color: '#7acbf9',
       },
     },
+    x: {
+      max: nums.value.eTime.max,
+      min: nums.value.eTime.min,
+    },
   },
-}
+}))
 </script>
 
 <style lang="scss" scoped>
