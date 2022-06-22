@@ -1,48 +1,57 @@
 <template>
   <div class="input-form">
-    <div class="row">
-      <span class="label">経過時間</span>
-      <span>
-        {{
-          Math.floor(eTime / 60)
-            .toString()
-            .padStart(3, '0')
-        }}
-        分
-        {{ (eTime % 60).toString().padStart(2, '0') }}
-        秒
-      </span>
+    <div>
+      <div class="row">
+        <span class="label">経過時間</span>
+        <span>
+          {{
+            Math.floor(eTime / 60)
+              .toString()
+              .padStart(3, '0')
+          }}
+          分
+          {{ (eTime % 60).toString().padStart(2, '0') }}
+          秒
+        </span>
+      </div>
+      <div class="row">
+        <span class="label">ミッション名</span>
+        <VTextField
+          v-model="missionName"
+          @update:model-value="update('missionName', $event)"
+          density="compact"
+          variant="outlined"
+        />
+      </div>
+      <div class="row">
+        <span class="label">開始アーマー値</span>
+        <VTextField
+          v-model="startArmor"
+          @update:model-value="update('startArmor', $event)"
+          density="compact"
+          variant="outlined"
+        />
+      </div>
+      <div class="row">
+        <span class="label">終了アーマー値</span>
+        <VTextField v-model="endArmor" density="compact" variant="outlined" />
+      </div>
+      <div class="row">
+        <VBtn :disabled="Boolean(startDate)" @click="startRecord">start</VBtn>
+        <VBtn
+          :disabled="(Number(endArmor) || -Infinity) < startArmor || !startDate"
+          @click="stopRecord"
+          >finish</VBtn
+        >
+        <VBtn :disabled="!startDate" @click="reset">reset</VBtn>
+      </div>
     </div>
-    <div class="row">
-      <span class="label">ミッション名</span>
-      <VTextField
-        v-model="missionName"
-        @update:model-value="update('missionName', $event)"
-        density="compact"
-        variant="outlined"
+    <div>
+      <VTextarea
+        class="textarea"
+        :model-value="JSON.stringify(record)"
+        @update:model-value="$emit('update:record', JSON.parse($event))"
       />
-    </div>
-    <div class="row">
-      <span class="label">開始アーマー値</span>
-      <VTextField
-        v-model="startArmor"
-        @update:model-value="update('startArmor', $event)"
-        density="compact"
-        variant="outlined"
-      />
-    </div>
-    <div class="row">
-      <span class="label">終了アーマー値</span>
-      <VTextField v-model="endArmor" density="compact" variant="outlined" />
-    </div>
-    <div class="row">
-      <VBtn :disabled="Boolean(startDate)" @click="startRecord">start</VBtn>
-      <VBtn
-        :disabled="(Number(endArmor) || -Infinity) < startArmor || !startDate"
-        @click="stopRecord"
-        >finish</VBtn
-      >
-      <VBtn :disabled="!startDate" @click="reset">reset</VBtn>
     </div>
   </div>
 </template>
@@ -70,10 +79,8 @@ const startDate = ref(
   Number(localStorage.getItem('edf-armor-recorder--startDate')) || 0
 )
 const finishDate = ref(new Date().getTime())
-const updatingFinishDate = () => setInterval(
-  () => (finishDate.value = new Date().getTime()),
-  100
-)
+const updatingFinishDate = () =>
+  setInterval(() => (finishDate.value = new Date().getTime()), 100)
 
 const eTime = computed(() =>
   Math.round((finishDate.value - (startDate.value || finishDate.value)) / 1000)
@@ -118,23 +125,41 @@ const stopRecord = () => {
 <style lang="scss" scoped>
 .input-form {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  > .row {
+  gap: 1rem;
+  > div {
+    width: 100%;
+    height: 100%;
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    > * {
-      flex-shrink: 0;
-      flex-grow: 1;
+    flex-direction: column;
+    gap: 0.5rem;
+    > .row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      > * {
+        flex-shrink: 0;
+        flex-grow: 1;
+      }
+      > .label {
+        min-width: 20%;
+        flex-grow: 0;
+      }
     }
-    > .label {
-      min-width: 20%;
-      flex-grow: 0;
+    ::v-deep(.v-input__details) {
+      display: none;
     }
-  }
-  ::v-deep(.v-input__details) {
-    display: none;
+    > .textarea {
+      display: block;
+      ::v-deep(> div) {
+        height: 100%;
+        > div {
+          height: 100%;
+          textarea {
+            resize: none;
+          }
+        }
+      }
+    }
   }
 }
 </style>
