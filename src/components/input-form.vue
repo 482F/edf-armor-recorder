@@ -16,11 +16,13 @@
       </div>
       <div class="row">
         <span class="label">ミッション名</span>
-        <VTextField
+        <VCombobox
           v-model="missionName"
+          :items="Object.keys(record)"
           @update:model-value="update('missionName', $event)"
           density="compact"
           variant="outlined"
+          no-filter
         />
       </div>
       <div class="row">
