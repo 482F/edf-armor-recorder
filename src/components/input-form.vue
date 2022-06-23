@@ -36,8 +36,12 @@
       <VTextField v-model="endArmor" density="compact" variant="outlined" />
     </div>
     <div class="row">
-      <VBtn @click="startRecord">start</VBtn>
-      <VBtn @click="stopRecord">finish</VBtn>
+      <VBtn :disabled="startDate" @click="startRecord">start</VBtn>
+      <VBtn
+        :disabled="(Number(endArmor) || -Infinity) < startArmor"
+        @click="stopRecord"
+        >finish</VBtn
+      >
     </div>
   </div>
 </template>
@@ -78,10 +82,11 @@ const doRecord = () => {
       newRecord,
     ],
   })
-  startDate.value = 0
 }
 const startRecord = () => {
-  finishDate.value = startDate.value = new Date().getTime()
+  startDate.value = new Date().getTime()
+  finishDate.value = startDate.value
+  localStorage.setItem('edf-armor-recorder--startDate', startDate.value)
 }
 const stopRecord = () => {
   doRecord()
