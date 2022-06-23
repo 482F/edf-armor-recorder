@@ -42,6 +42,7 @@
         @click="stopRecord"
         >finish</VBtn
       >
+      <VBtn :disabled="!startDate" @click="reset">reset</VBtn>
     </div>
   </div>
 </template>
@@ -65,11 +66,20 @@ const startArmor = ref(
 )
 const endArmor = ref('')
 
+const startDate = ref(
+  Number(localStorage.getItem('edf-armor-recorder--startDate')) || 0
+)
+const finishDate = ref(new Date().getTime())
 setInterval(() => (finishDate.value = new Date().getTime()), 100)
 const eTime = computed(() =>
   Math.round((finishDate.value - (startDate.value || finishDate.value)) / 1000)
 )
 
+const reset = () => {
+  startDate.value = 0
+  finishDate.value = 0
+  localStorage.setItem('edf-armor-recorder--startDate', startDate.value)
+}
 const doRecord = () => {
   const newRecord = {
     eTime: Math.round(eTime.value / 60),
@@ -82,6 +92,7 @@ const doRecord = () => {
       newRecord,
     ],
   })
+  reset()
 }
 const startRecord = () => {
   startDate.value = new Date().getTime()
