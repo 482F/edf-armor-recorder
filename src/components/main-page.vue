@@ -1,6 +1,10 @@
 <template>
   <div class="main">
-    <InputForm class="input-form" v-model:record="record" />
+    <InputForm
+      class="input-form"
+      :record="record"
+      @update:record="updateRecord"
+    />
     <DataList class="data-list" :record="record" />
     <ScatterPlot class="scatter-plot" :record="record" />
   </div>
@@ -15,6 +19,11 @@ import { ref } from 'vue'
 const record = ref(
   JSON.parse(localStorage.getItem('edf-armor-recorder--record') || '{}')
 )
+
+const updateRecord = (newRecord) => {
+  record.value = newRecord
+  localStorage.setItem('edf-armor-recorder--record', JSON.stringify(newRecord))
+}
 </script>
 
 <style lang="scss" scoped>
