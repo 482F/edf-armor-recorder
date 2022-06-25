@@ -80,20 +80,35 @@ const startDate = ref(
   Number(localStorage.getItem('edf-armor-recorder--startDate')) || 0
 )
 const finishDate = ref(new Date().getTime())
-const updatingFinishDate = () =>
-  setInterval(() => (finishDate.value = new Date().getTime()), 100)
+const updatingFinishDate = async (ms) => {
+  if (ms) {
+    const waitMs = ms - (new Date().getTime() % 1000)
+    await new Promise((resolve) =>
+      setTimeout(resolve, waitMs < 0 ? waitMs + 1000 : waitMs)
+    )
+  }
+  return setInterval(
+    () =>
+      (finishDate.value = new Date().getTime(
+        console.log(finishDate.value - (startDate.value || finishDate.value))
+      )),
+    1000
+  )
+}
 
 const eTime = computed(() =>
   Math.round((finishDate.value - (startDate.value || finishDate.value)) / 1000)
 )
 
-let intervalId = startDate.value ? updatingFinishDate() : undefined
+let intervalIdPromise = startDate.value
+  ? updatingFinishDate(startDate.value % 1000)
+  : undefined
 
 const reset = () => {
   startDate.value = 0
   finishDate.value = 0
   localStorage.setItem('edf-armor-recorder--startDate', startDate.value)
-  clearInterval(intervalId)
+  intervalIdPromise.then((id) => clearInterval(id))
 }
 const doRecord = () => {
   const newRecord = {
@@ -112,7 +127,7 @@ const startRecord = () => {
   startDate.value = new Date().getTime()
   finishDate.value = startDate.value
   localStorage.setItem('edf-armor-recorder--startDate', startDate.value)
-  intervalId = updatingFinishDate()
+  intervalIdPromise = updatingFinishDate()
 }
 const stopRecord = () => {
   doRecord()
@@ -156,10 +171,10 @@ const stopRecord = () => {
         > div {
           height: 100%;
           .v-field__field {
-          padding: 4px;
-          > textarea {
-            resize: none;
-          }
+            padding: 4px;
+            > textarea {
+              resize: none;
+            }
           }
         }
       }
