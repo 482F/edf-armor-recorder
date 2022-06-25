@@ -19,7 +19,12 @@ const record = ref(
 )
 
 const updateRecord = (newRecord) => {
-  record.value = newRecord
+  record.value = Object.fromEntries(
+    Object.entries(newRecord).map(([name, records]) => [
+      name,
+      records.sort((a, b) => a.eTime - b.eTime),
+    ])
+  )
   localStorage.setItem('edf-armor-recorder--record', JSON.stringify(newRecord))
 }
 </script>
