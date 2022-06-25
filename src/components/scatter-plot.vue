@@ -56,22 +56,22 @@ const props = defineProps({
 
 const nums = computed(() => {
   const values = Object.values(props.record).flatMap((records) => records)
+  const getNums = (nums) => {
+    const sortedNums = [...nums].sort((a, b) => a - b)
+    const minNum = sortedNums[0]
+    const maxNum = sortedNums.at(-1)
+    return {
+      max: maxNum + maxNum * 0.03,
+      min: minNum - maxNum * 0.03,
+    }
+  }
   const amounts = values.map((value) => value.gotArmor)
   const amountPerHs = values.map((value) => value.gotArmor / (value.eTime / 60))
   const times = values.map((value) => value.eTime)
   return {
-    amount: {
-      max: Math.max(...amounts) * 1.05,
-      min: Math.min(...amounts) * 0.95,
-    },
-    amountPerH: {
-      max: Math.max(...amountPerHs) * 1.05,
-      min: Math.min(...amountPerHs) * 0.95,
-    },
-    eTime: {
-      max: Math.max(...times) * 1.05,
-      min: Math.min(...times) * 0.95,
-    },
+    amount: getNums(amounts),
+    amountPerH: getNums(amountPerHs),
+    eTime: getNums(times),
   }
 })
 console.log({ props, nums: nums.value })
