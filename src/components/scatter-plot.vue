@@ -2,6 +2,9 @@
   <div class="scatter-plot">
     <VSelect
       v-model="showMissionName"
+      class="select"
+      density="compact"
+      variant="outlined"
       @update:model-value="update('showMissionName', $event)"
       :items="Object.keys(record)"
     />
@@ -130,6 +133,11 @@ const chartOptions = computed(() => ({
 .scatter-plot {
   display: flex;
   flex-direction: column;
+  > .select {
+    ::v-deep(> .v-input__details) {
+      display: none;
+    }
+  }
   > .chart {
     flex-grow: 1;
   }
